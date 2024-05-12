@@ -7,7 +7,9 @@ export default function Header() {
         <img src={logo} alt="Logo" />
         <h1>reactfood</h1>
       </div>
-      <button className="text-button ">Cart ()</button>
+      <nav>
+        <button className="text-button ">Cart ()</button>
+      </nav>
     </header>
   );
 }
