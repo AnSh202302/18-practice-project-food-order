@@ -7,15 +7,12 @@ export default function Cards() {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  console.log("meals", meals);
-
   useEffect(() => {
     setIsLoading(true);
     async function fetchMeals() {
       try {
         const meals = await getAllMeals();
         setMeals(meals);
-        console.log(meals);
       } catch (error) {
         setIsError({
           message:
@@ -30,11 +27,9 @@ export default function Cards() {
     <section>
       {isLoading && <p>Loadong...</p>}
       {isError && <p>Error</p>}
-      {!isLoading && !isError && (
-        <ul id="meals">
-          <Card meals={meals} />
-        </ul>
-      )}
+      <ul id="meals">
+        <Card meals={meals} />
+      </ul>
     </section>
   );
 }
