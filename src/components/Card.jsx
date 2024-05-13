@@ -1,3 +1,5 @@
+import { currencyFormatter } from "../util/formatting";
+
 export default function Card({ meal }) {
   const { image, name, price, description } = meal;
   return (
@@ -6,7 +8,7 @@ export default function Card({ meal }) {
         <img src={`http://localhost:3000/${image}`} alt={name} />
         <div>
           <h3>{name}</h3>
-          <p className="meal-item-price">${price}</p>
+          <p className="meal-item-price">{currencyFormatter.format(price)}</p>
           <p className="meal-item-description">{description}</p>
         </div>
         <p className="meal-item-actions">
