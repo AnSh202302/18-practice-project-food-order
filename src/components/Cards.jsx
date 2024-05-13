@@ -28,7 +28,9 @@ export default function Cards() {
       {isLoading && <p>Loadong...</p>}
       {isError && <p>Error</p>}
       <ul id="meals">
-        <Card meals={meals} />
+        {meals.map((meal) => (
+          <Card key={meal.id} meal={meal} />
+        ))}
       </ul>
     </section>
   );
