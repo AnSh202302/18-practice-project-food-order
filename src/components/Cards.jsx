@@ -1,5 +1,6 @@
 import Card from "./Card";
 import useHttp from "../hook/useHttp";
+import Error from "./Error";
 
 const requestConfig = {};
 
@@ -8,10 +9,13 @@ export default function Cards() {
     data: meals,
     isLoading,
     error,
-  } = useHttp("http://localhost:3000/meals", requestConfig, []);
+  } = useHttp("http://localhost:3000/mealssss", requestConfig, []);
 
   if (isLoading) {
-    return <p>Fetching meals...</p>;
+    return <p className="center">Fetching meals...</p>;
+  }
+  if (error) {
+    return <Error title="Failed to fatch meals" message={error} />;
   }
 
   return (
