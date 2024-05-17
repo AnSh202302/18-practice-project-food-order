@@ -9,7 +9,7 @@ export default function Cards() {
     data: meals,
     isLoading,
     error,
-  } = useHttp("http://localhost:3000/mealssss", requestConfig, []);
+  } = useHttp("http://localhost:3000/meals", requestConfig, []);
 
   if (isLoading) {
     return <p className="center">Fetching meals...</p>;
