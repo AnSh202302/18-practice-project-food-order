@@ -10,7 +10,6 @@ async function sendHttpRequest(url, config) {
   }
   return resData;
 }
-mklo;
 export default function useHttp(url, config, initialData) {
   const [data, setData] = useState(initialData);
   const [isLoading, setIsLoading] = useState(false);
