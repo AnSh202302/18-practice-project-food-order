@@ -1,14 +1,15 @@
-import { useContext } from "react";
-import Modal from "./UI/Modal";
-import CartContext from "../store/CartContext";
-import { currencyFormatter } from "../util/formatting";
-import Input from "./UI/Input";
-import Button from "./UI/Button";
-import UserProgressContext from "../store/UserProgressContext";
-import useHttp from "../hook/useHttp";
-import Error from "./Error";
+import { useContext, useActionState } from "react";
 
-const config = {
+import Modal from "./UI/Modal.jsx";
+import CartContext from "../store/CartContext.jsx";
+import { currencyFormatter } from "../util/formatting.js";
+import Input from "./UI/Input.jsx";
+import Button from "./UI/Button.jsx";
+import UserProgressContext from "../store/UserProgressContext.jsx";
+import useHttp from "../hook/useHttp.js";
+import Error from "./Error.jsx";
+
+const requestConfig = {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
@@ -18,10 +19,10 @@ const config = {
 export default function Checkout() {
   const cartCtx = useContext(CartContext);
   const userProgressCtx = useContext(UserProgressContext);
-  const { data, isLoading, error, sendRequest, clearData } = useHttp(
+
+  const { data, error, sendRequest, clearData } = useHttp(
     "http://localhost:3000/orders",
-    config,
-    []
+    requestConfig
   );
 
   const cartTotal = cartCtx.items.reduce(
@@ -38,8 +39,9 @@ export default function Checkout() {
     cartCtx.clearCart();
     clearData();
   }
-  async function checkoutAction(fd) {
-    const customerData = Object.fromEntries(fd.entries());
+
+  async function checkoutAction(prevState, fd) {
+    const customerData = Object.fromEntries(fd.entries()); // { email: test@example.com }
 
     await sendRequest(
       JSON.stringify({
@@ -51,6 +53,11 @@ export default function Checkout() {
     );
   }
 
+  const [formState, formAction, isSending] = useActionState(
+    checkoutAction,
+    null
+  );
+
   let actions = (
     <>
       <Button type="button" textOnly onClick={handleClose}>
@@ -60,41 +67,45 @@ export default function Checkout() {
     </>
   );
 
-  if (isLoading) {
+  if (isSending) {
     actions = <span>Sending order data...</span>;
   }
+
   if (data && !error) {
     return (
       <Modal
         open={userProgressCtx.progress === "checkout"}
-        onClose={handleClose}
+        onClose={handleFinish}
       >
         <h2>Success!</h2>
-        <p>Your order submitted successfully.</p>
+        <p>Your order was submitted successfully.</p>
         <p>
-          We will get back to you with more details via email within the next{" "}
+          We will get back to you with more details via email within the next
           few minutes.
         </p>
         <p className="modal-actions">
-          <Button onClick={handleFinish}>Okey</Button>
+          <Button onClick={handleFinish}>Okay</Button>
         </p>
       </Modal>
     );
   }
+
   return (
     <Modal open={userProgressCtx.progress === "checkout"} onClose={handleClose}>
-      <form action={checkoutAction}>
+      <form action={formAction}>
         <h2>Checkout</h2>
-        <p>Total Amount: {currencyFormatter.format(cartTotal)} </p>
-        <Input lable="Full Name" type="text" id="name" />
-        <Input lable="E-Mail Address" type="email" id="email" />
-        <Input lable="Street" type="text" id="street" />
+        <p>Total Amount: {currencyFormatter.format(cartTotal)}</p>
+
+        <Input label="Full Name" type="text" id="name" />
+        <Input label="E-Mail Address" type="email" id="email" />
+        <Input label="Street" type="text" id="street" />
         <div className="control-row">
-          <Input lable="Postal Code" type="text" id="postal-code" />
-          <Input lable="City" type="text" id="city" />
+          <Input label="Postal Code" type="text" id="postal-code" />
+          <Input label="City" type="text" id="city" />
         </div>
 
-        {error && <Error title="Failed to submit order." message={error} />}
+        {error && <Error title="Failed to submit order" message={error} />}
+
         <p className="modal-actions">{actions}</p>
       </form>
     </Modal>
